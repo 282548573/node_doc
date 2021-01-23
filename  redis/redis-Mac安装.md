@@ -68,7 +68,7 @@ redis-cli -h 127.0.0.1 -p 6379
 
 
 
-#### 7、启动 redis 客户端，打开终端并输入命令 **redis-cli**。该命令会连接本地的 redis 服务。
+#### 7、启动 redis 客户端
 
 ```java
 $redis-cli
@@ -81,7 +81,7 @@ PONG
 
 #### 8、关闭redis服务
 
-- 正确停止Redis的方式应该是向Redis发送SHUTDOWN命令
+- 正确停止Redis
 
 ```
 redis-cli shutdown

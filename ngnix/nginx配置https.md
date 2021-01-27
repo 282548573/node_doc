@@ -70,7 +70,7 @@ cat /etc/nginx/conf.d/default.conf
 
 ```
 
-![image-20210128002432407](/Users/sky/Library/Application Support/typora-user-images/image-20210128002432407.png)
+![image-20210128002432407](image-20210128002432407.png)
 
 
 

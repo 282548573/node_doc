@@ -52,6 +52,10 @@ rpm -qa | grep nginx
 # 启动
 systemctl start nginx
 
+# 启动
+systemctl restart nginx
+
+
 # 加入开机启动
 systemctl enable nginx
 
@@ -71,6 +75,17 @@ cat /etc/nginx/conf.d/default.conf
 ```
 
 ![image-20210128002432407](image-20210128002432407.png)
+
+### 环境检查 
+
+> 在浏览器输入自己服务器的IP地址即可访问到nginx，如下图所示，nginx服务的默认端口为80（这里需要注意防火墙的限制和端口冲突）
+
+```
+sudo nginx -t
+
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
 
 
 
@@ -200,5 +215,118 @@ systemctl restart nginx
 ```shell
 # 开:8888服务 访问接口
 http://devops.arsyun.com 
+```
+
+
+
+
+
+
+
+```
+
+server {
+	listen 443 ssl;
+	server_name f01006.arsyun.com;
+
+	ssl_certificate /etc/nginx/conf.d/sky.pem;
+	ssl_certificate_key /etc/nginx/conf.d/sky.key;
+
+	ssl_session_cache shared:SSL:1m;
+	ssl_session_timeout 5m;
+
+	ssl_ciphers HIGH:!aNULL:!MD5;
+	ssl_prefer_server_ciphers on;
+
+    gzip on;
+    gzip_static on;
+    gzip_buffers 32 4K;
+    gzip_comp_level 1;
+    gzip_min_length 1K;
+    gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+# gzip_types application/javascript text/css text/xml;
+    gzip_disable "MSIE [1-6]\."; #配置禁用gzip条件，支持正则。此处表示ie6及以下不启用gzip（因为ie低版本不支持）
+    gzip_vary on;
+
+
+	location / {
+		 root /usr/share/nginx/html/miner_cloud;
+		# root /usr/share/nginx/html/public_cloud;
+		# root html;
+		 index index.html index.htm;
+		# proxy_pass http://127.0.0.1:80;
+		add_header Content-Security-Policy upgrade-insecure-requests;
+	}
+
+	
+        location /v1 {
+                # root /usr/share/nginx/html/miner_cloud;
+                # root /usr/share/nginx/html/public_cloud;
+                # root html;
+                # index index.html index.htm;
+                proxy_pass http://127.0.0.1:8082/v1;
+                add_header Content-Security-Policy upgrade-insecure-requests;
+        }
+}
+
+
+server {
+    listen       80;
+    # server_name  localhost;
+    server_name  f01006.arsyun.com;
+    return 301 https://f01006.arsyun.com;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+```
+
+## 五、配置GZip
+
+
+
+```
+sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+
+vim /etc/nginx/nginx.conf
+#gzip  on; 打开
 ```
 

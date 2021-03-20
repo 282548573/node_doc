@@ -52,7 +52,7 @@ mysql -u root -p
 
 
 ```shell
-# 解决利用sqoop导入MySQL中文乱码的问题（可以插入中文，但不能用sqoop导入中文）导致导入时中文乱码的原因是character_set_server默认设置是latin1 可以单个设置修改编码方式set character_set_server=utf8;但是重启会失效，建议按以下方式修改编码方式。
+# 解决利用sqoop导入MySQL中文乱码的问题（可以插入中文，但不能用sqoop导入中文）导致导入时中文乱码的原因是character_set_server默认设置是latin1 可以单个设置修改编码方式set character_set_server=;但是重启会失效，建议按以下方式修改编码方式。
 mysql -u root -p
 
 # 并查看MySQL目前设置的编码
@@ -129,6 +129,7 @@ vim /etc/mysql/mysql.conf.d/mysqld.cnf
 mysql -u root -p
 # 配置外网访问
 mysql> grant all on *.* to root@'%' identified by 'ars123456' with grant option;
+grant all on *.* to root@'%' identified by 'ars123456' with grant option;
 
 # 配置内网访问
 mysql> grant all on *.* to root@'127.0.0.1' identified by 'ars123456' with grant option;
@@ -138,3 +139,35 @@ mysql> flush privileges;
 mysql> exit
 ```
 
+
+
+
+
+## 四、外网访问 （）
+
+> root@arstech:~# mysql -V
+> mysql  Ver 8.0.23-0ubuntu0.20.04.1 for Linux on x86_64 ((Ubuntu))
+
+
+
+>mysql8 之前的版本中加密规则是mysql_native_password,
+>而在mysql8之后，加密规则是caching_sha2_password 
+>
+>mysql -uroot -ppassword #登录
+>
+>use mysql; #选择数据库
+>
+># 远程连接请将下方的'localhost'换成'%'
+>#本地连接更改加密方式
+>ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER; 
+>####远程连接的更改加密方式#######
+>ALTER USER 'root'@'%' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER;
+>#-----------------------#
+>
+>#本地连接更新用户密码
+>ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '密码'; 
+>####远程连接更新用户密码#######
+>ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '密码'; 
+>#-----------------------#
+>
+>FLUSH PRIVILEGES; #刷新权限

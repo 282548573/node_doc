@@ -34,11 +34,11 @@ Registry Mirrors:
 
 
 
-## 二、功能
+## 三、功能
 
 
 
-##### docker run 
+#### docker run 
 
 ###### 普通运行
 
@@ -109,6 +109,46 @@ ubuntu@VM-0-8-ubuntu:~$ sudo docker run -itd -p 5001:5000 --name ubuntu-test1 ub
 ubuntu@VM-0-8-ubuntu:~$ sudo docker ps -al
 CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          PORTS                    NAMES
 308565f9134b   ubuntu:15.10   "/bin/bash"   13 seconds ago   Up 12 seconds   0.0.0.0:5001->5000/tcp   ubuntu-test1
+```
+
+###### 
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker run -itd -p 127.0.0.1:5002:5000 --name ubuntu-test4 ubuntu:15.10 /bin/bash
+01786b04e74327224d14d56fa96175147168cfb37a0bab081018ac2a27d16b7d
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND       CREATED              STATUS              PORTS                      NAMES
+01786b04e743   ubuntu:15.10   "/bin/bash"   3 seconds ago        Up 2 seconds        127.0.0.1:5002->5000/tcp   ubuntu-test4
+```
+
+
+
+
+
+###### 后台模式- 随机 端口
+
+```shell
+ubuntu@VM-0-8-ubuntu:~$ sudo docker run -itd -P --name ubuntu-test1 ubuntu:15.10 /bin/bash
+308565f9134b01b099b05fce615ab27ac76c7bc80799153a445d866e079cfdb9
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          PORTS     NAMES
+f6e34ee7bf31   ubuntu:15.10   "/bin/bash"   13 seconds ago   Up 12 seconds             ubuntu-test1
+```
+
+
+
+
+
+###### 后台模式- UDP
+
+> 上面的例子中，默认都是绑定 tcp 端口，如果要绑定 UDP 端口，可以在端口后面加上 **/udp**。
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker run -itd -p 127.0.0.1:5002:5000/udp  --name ubuntu-test4 ubuntu:15.10 /bin/bash
+01786b04e74327224d14d56fa96175147168cfb37a0bab081018ac2a27d16b7d
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND       CREATED              STATUS              PORTS                      NAMES
+01786b04e743   ubuntu:15.10   "/bin/bash"   3 seconds ago        Up 2 seconds        127.0.0.1:5002->5000/tcp   ubuntu-test4
 ```
 
 
@@ -374,7 +414,7 @@ ubuntu@VM-0-8-ubuntu:~$ sudo docker inspect 308565f9134b
         "Args": [],
 ```
 
-### 三、镜像
+## 四、镜像
 
 #####  docker images
 
@@ -459,5 +499,130 @@ ubuntu         15.10     9b9cb95443b5   4 years ago         137MB
 ubuntu@VM-0-8-ubuntu:~$ sudo docker rmi 9b37a67d16dd
 Untagged: ubuntu_sky1:v4
 Deleted: sha256:9b37a67d16ddf21452508466fdfc8f94dbc2f1252587efeca1ebebf304a9758d
+```
+
+##### docker commit
+
+> 此时 ID 为 e218edb10161 的容器，是按我们的需求更改的容器。我们可以通过命令 docker commit 来提交容器副本。
+>
+> - **-m:** 提交的描述信息
+> - **-a:** 指定镜像作者
+> - **e218edb10161：**容器 ID
+> - **runoob/ubuntu:v2:** 指定要创建的目标镜像名
+
+```shell
+ubuntu@VM-0-8-ubuntu:~$ sudo docker run -t -i ubuntu:15.10 /bin/bash
+root@7003f6b71a26:/# docker commit -m="has update" -a="runoob" 7003f6b71a26 runoob/ubuntu:v2
+root@7003f6b71a26:/# exit
+ubuntu@VM-0-8-ubuntu:~$ sudo docker commit -m="has update" -a="runoob" 7003f6b71a26 runoob/ubuntu:v2
+sha256:0d9a1fddefd149fefdb04ceb854052d74b7ceaa92094d5d9c3456c89d0e9d5cf
+ubuntu@VM-0-8-ubuntu:~$ sudo docker images
+REPOSITORY      TAG       IMAGE ID       CREATED              SIZE
+runoob/ubuntu   v2        0d9a1fddefd1   About a minute ago   137MB
+```
+
+##### docker build
+
+> 编写 Dockerfile 文件
+
+```dockerfile
+FROM    centos:6.7
+MAINTAINER      Fisher "fisher@sudops.com"
+
+RUN     /bin/echo 'root:123456' |chpasswd
+RUN     useradd runoob
+RUN     /bin/echo 'runoob:123456' |chpasswd
+RUN     /bin/echo -e "LANG=\"en_US.UTF-8\"" >/etc/default/local
+EXPOSE  22
+EXPOSE  80
+CMD     /usr/sbin/sshd -D
+```
+
+> - **-t** ：指定要创建的目标镜像名
+> - **.** ：Dockerfile 文件所在目录，可以指定Dockerfile 的绝对路径
+>
+> 使用docker images 查看创建的镜像已经在列表中存在,镜像ID为860c279d2fec
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker build -t sky_test .
+Sending build context to Docker daemon  10.75kB
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+sky_test        latest    3c1d3f62be55   17 seconds ago   191MB
+```
+
+##### docker tag
+
+> 我们可以使用 docker tag 命令，为镜像添加一个新的标签。
+>
+> docker tag 镜像ID，这里是 3c1d3f62be55 ,用户名称、镜像源名(repository name)和新的标签名(tag)。
+>
+> 使用 docker images 命令可以看到，ID为3c1d3f62be55的镜像多一个标签。
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker tag 3c1d3f62be55 sky_test33:v3
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker images
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+sky_test33      v3        3c1d3f62be55   6 minutes ago    191MB
+sky_test        latest    3c1d3f62be55   6 minutes ago    191MB
+```
+
+
+
+## 五、容器连接
+
+> 端口映射并不是唯一把 docker 连接到另一个容器的方法。
+>
+> docker 有一个连接系统允许将多个容器连接在一起，共享连接信息。
+>
+> docker 连接会创建一个父子关系，其中父容器可以看到子容器的信息。
+
+#### docker network
+
+> **-d**：参数指定 Docker 网络类型，有 bridge、overlay。
+>
+> 其中 overlay 网络类型用于 Swarm mode，在本小节中你可以忽略它
+
+```shell
+docker network create -d bridge test-net
+```
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker network create -d bridge test-net
+b2c57a429103437b67ef940a3e3ffd391ce4259ed32787ad74140bec07a6dcda
+
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker network ls
+NETWORK ID     NAME       DRIVER    SCOPE
+eeb60cae0990   bridge     bridge    local
+ec86affc3f30   host       host      local
+282f9f90ee52   none       null      local
+b2c57a429103   test-net   bridge    local
+```
+
+
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker run -itd --name test1 --network test-net ubuntu /bin/bash
+383978d0fc3edbb6ccbb484523b84c73ecaa6864faee6db2950b44442ad81514
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          PORTS                      NAMES
+383978d0fc3e   ubuntu   "/bin/bash"   6 seconds ago    Up 4 seconds                               test1
+
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker run -itd --name test3 --network test-net ubuntu /bin/bash
+866d77f9510954fdeac0b6cb852ed3cfbffc01e2891edf49a60cdd8f246f3fda
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND       CREATED              STATUS              PORTS                      NAMES
+866d77f95109   ubuntu   "/bin/bash"   6 seconds ago        Up 4 seconds                                   test3
+
+root@383978d0fc3e:/# sudo docker exec -it test1 /bin/bash
+root@383978d0fc3e:/# apt-get update
+root@383978d0fc3e:/# apt install iputils-ping
+
+root@383978d0fc3e:/# sudo docker exec -it test2 /bin/bash
+root@383978d0fc3e:/# apt-get update
+root@383978d0fc3e:/# apt install iputils-ping
+
+root@383978d0fc3e:/# ping test2
+
 ```
 

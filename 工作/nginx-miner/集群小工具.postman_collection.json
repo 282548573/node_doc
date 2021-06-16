@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "48a471b7-1b09-4439-8b99-12a1e626f07d",
+		"name": "集群小工具",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/api/v1/overview/miner_power_threshold_percent",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8083/api/v1/overview/miner_power_threshold_percent",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"v1",
+						"overview",
+						"miner_power_threshold_percent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/overview/miner_power_threshold_percent",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"percent\":80\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8083/api/v1/overview/miner_power_threshold_percent",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"v1",
+						"overview",
+						"miner_power_threshold_percent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/overview/miner_power_threshold",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"list\": [\n            {\n                \"miner\": \"f02520\",\n                \"power_threshold\": 20,\n                \"is_run_power\": true\n            },\n            {\n                \"miner\": \"f0673613\",\n                \"power_threshold\": 20,\n                \"is_run_power\": true\n            },\n            {\n                \"miner\": \"f02303\",\n                \"power_threshold\": 20,\n                \"is_run_power\": true\n            },\n            {\n                \"miner\": \"f0469168\",\n                \"power_threshold\": 20,\n                \"is_run_power\": true\n            },\n            {\n                \"miner\": \"f02626\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f066270\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f02528\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0102358\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f02503\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f079618\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0121260\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0222674\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f022748\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f040332\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f047843\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f047857\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0112087\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f047868\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f090387\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0111658\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0121602\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0513878\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0753959\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0753988\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0753213\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0753055\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0753366\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0744513\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0772766\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0723827\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0845296\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            },\n            {\n                \"miner\": \"f0845552\",\n                \"power_threshold\": 0,\n                \"is_run_power\": false\n            }\n            ]\n    }"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8083/api/v1/overview/miner_power_threshold",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"v1",
+						"overview",
+						"miner_power_threshold"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/overview/miner_power_threshold",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8083/api/v1/overview/miner_power_threshold",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"v1",
+						"overview",
+						"miner_power_threshold"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/v1/overview/cluster?day=1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8083/api/v1/overview/cluster?day=1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8083",
+					"path": [
+						"api",
+						"v1",
+						"overview",
+						"cluster"
+					],
+					"query": [
+						{
+							"key": "day",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

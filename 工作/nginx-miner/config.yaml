@@ -1,0 +1,50 @@
+# zap logger configuration
+zap:
+  level: 'info'
+  format: 'console'
+  prefix: '[full_node]'
+  director: '/var/log/fullnode'
+  link-name: 'latest_log'
+  show-line: true
+  encode-level: 'LowercaseColorLevelEncoder'
+  stacktrace-key: 'stacktrace'
+  log-in-console: true
+
+# mysql connect configuration
+mysql:
+  path: '218.17.62.54:3306'
+  config: 'charset=utf8mb4&parseTime=True&loc=Local'
+  db-name: 'full_data'
+  username: 'root'
+  password: 'ars123456'
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: false
+  log-zap: ''
+
+# system configuration
+system:
+  env: 'fullnode'  # Change to "develop" to skip authentication for development mode
+  addr: 8083
+  db-type: 'mysql'
+  use-multipoint: true
+  exec-frequency: 3
+  sync-frequency: 60
+  base-fee-notify: true # 启动base_fee算法通知
+
+# full node configuration
+node:
+#  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.gxXirurUqpOka6twMsWb6PoufBLB-_s7YytAQaMTrXs'
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.TrxhxiEhw0fq-KiK1j3JALnDb9Z7MNicVl57lQL4SCU'
+#  addr: '218.17.62.54:1234'
+  addr: '192.168.1.71:1234'
+  disable: true
+  miner-ids: [ 'f02303','f066270','f02503','f079618',"f0121260","f0222674", "f02528","f0102358","f02626","f047857","f040332","f022748","f047843","f047868","f090387","f0112087","f0111658","f0121602","f02520","f060975","f0156342" ]
+
+miner:
+  miner-ids: ['f02520','f0673613','f02303','f0469168','f02626','f066270','f02528','f0102358','f02503','f079618','f0121260','f0222674','f022748','f040332',
+              'f047843','f047857','f0112087','f047868','f090387','f0111658','f0121602','f0513878','f0753959','f0753988','f0753213','f0753055','f0753366',
+              'f0744513','f0772766','f0723827']
+  miner-tag: ['先河f02520','先河f0673613（64G）','鑫兜f02303','鑫兜f0469168（64G）','先东f02626','九州f066270','云库f02528','云库f0102358','矿宇f02503','矿宇f079618','矿宇f0121260','矿宇f0222674','凯尔盈f022748',
+              '熊猫f040332','时空f047843','鑫河f047857','鑫河f0112087','光星f047868','九零一f090387','金洋f0111658','亚视f0121602','幸运f0513878','众易云f0753959（64G）','鑫河f0753988（64G）',
+              '造极科技f0753213（64G）','亿诚f0753055（64G）','博亿f0753366（64G）','众合亿f0744513（64G）','众合亿2 f0772766（64G）','云库3 f0723827（64G）']

@@ -2,6 +2,64 @@
 
 ## 一、安装
 
+### 官网
+
+https://docs.docker.com/engine/install/ubuntu/
+
+```shell
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh --mirror Aliyun
+```
+
+### 查看服务状态：
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky/dir$ systemctl status docker
+● docker.service - Docker Application Container Engine
+   Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+   Active: active (running) since Wed 2021-03-24 09:43:18 CST; 3 months 3 days ago
+     Docs: https://docs.docker.com
+ Main PID: 26621 (dockerd)
+    Tasks: 12
+   CGroup: /system.slice/docker.service
+           └─26621 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+```
+
+### 启动服务：
+
+```shell
+systemctl start docker
+systemctl stop docker
+
+systemctl enable docker
+#查看状态
+ubuntu@VM-0-8-ubuntu:~/sky/dir$ docker info
+Client:
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  app: Docker App (Docker Inc., v0.9.1-beta3)
+  buildx: Build with BuildKit (Docker Inc., v0.5.1-docker)
+
+Server:
+ERROR: Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.24/info: dial unix /var/run/docker.sock: connect: permission denied
+errors pretty printing info
+
+
+```
+
+
+
+### 创建Docker组
+
+```shell
+sudo groupadd docker
+sudo usermod -aG docker $USER
+systemctl restart docker
+```
+
+
+
 ## 二、镜像配置
 
 ### 1、腾讯云镜像配置
@@ -30,6 +88,14 @@ service docker restart
 ```
 Registry Mirrors:
  https://mirror.ccs.tencentyun.com
+```
+
+
+
+### 2、镜像网站
+
+```http
+https://hub.docker.com
 ```
 
 
@@ -251,10 +317,10 @@ df6fe458e225
 
 ##### docker pull
 
-> 获取镜像
+> 获取镜像 软件:版本号
 
 ```shell
-sudo docker pull ubuntu:15.10
+sudo docker pull ubuntu:15.10 
 sudo docker run -it ubuntu:15.10 /bin/bash
 ```
 
@@ -319,30 +385,6 @@ ubuntu@VM-0-8-ubuntu:~$ sudo docker import http://example.com/exampleimage.tgz e
 ```
 
 
-
-##### docker rm
-
-运行时删除
-
-
-
-```shell
-ubuntu@VM-0-8-ubuntu:~$ sudo docker rm d42148dfc398
-Error response from daemon: You cannot remove a running container d42148dfc3989073ae77039fec49852080eed07acc17c898fcfdac0311d737bc. Stop the container before attempting removal or force remove
-ubuntu@VM-0-8-ubuntu:~$ sudo docker rm -f d42148dfc398
-d42148dfc398
-```
-
-
-
-```shell
-ubuntu@VM-0-8-ubuntu:~$ sudo docker ps -a
-CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          PORTS     NAMES
-a678d89378df   ubuntu:15.10   "/bin/bash"   33 minutes ago   Up 31 minutes             ubuntu-test
-d42148dfc398   ubuntu:15.10   "/bin/bash"   6 hours ago      Up 5 hours                nervous_solomon
-
-
-```
 
 ##### docker container prune 
 
@@ -482,6 +524,34 @@ centos/httpd-24-centos7                 Platform for running Apache httpd 2.4 or
 centos/httpd                                                                            33                   [OK]
 ```
 
+
+
+##### docker rm
+
+运行时删除
+
+
+
+```shell
+ubuntu@VM-0-8-ubuntu:~$ sudo docker rm d42148dfc398
+Error response from daemon: You cannot remove a running container d42148dfc3989073ae77039fec49852080eed07acc17c898fcfdac0311d737bc. Stop the container before attempting removal or force remove
+ubuntu@VM-0-8-ubuntu:~$ sudo docker rm -f d42148dfc398
+d42148dfc398
+```
+
+
+
+```shell
+ubuntu@VM-0-8-ubuntu:~$ sudo docker ps -a
+CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          PORTS     NAMES
+a678d89378df   ubuntu:15.10   "/bin/bash"   33 minutes ago   Up 31 minutes             ubuntu-test
+d42148dfc398   ubuntu:15.10   "/bin/bash"   6 hours ago      Up 5 hours                nervous_solomon
+
+
+```
+
+##### 
+
 ##### docker rmi
 
 > 镜像删除使用 **docker rmi** 命令，比如我们删除 hello-world 镜像：
@@ -566,6 +636,12 @@ REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
 sky_test33      v3        3c1d3f62be55   6 minutes ago    191MB
 sky_test        latest    3c1d3f62be55   6 minutes ago    191MB
 ```
+
+
+
+##### docker load -i
+
+> 镜像导入
 
 
 

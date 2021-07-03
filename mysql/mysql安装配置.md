@@ -127,13 +127,15 @@ vim /etc/mysql/mysql.conf.d/mysqld.cnf
 ```shell
 
 mysql -u root -p
+use mysql;
+
 # 配置外网访问
-mysql> grant all on *.* to root@'%' identified by '123456' with grant option;
-grant all on *.* to root@'%' identified by '123456' with grant option;
+mysql> grant all on *.* to root@'%' identified by 'ars05201010' with grant option;
+grant all on *.* to sky@'%' identified by 'ars05201010' with grant option;
 
 # 配置内网访问
-mysql> grant all on *.* to root@'127.0.0.1' identified by '123456' with grant option;
-mysql> grant all on *.* to root@'localhost' identified by '123456' with grant option;
+mysql> grant all on *.* to root@'127.0.0.1' identified by 'ars05201010' with grant option;
+mysql> grant all on *.* to root@'localhost' identified by 'ars05201010' with grant option;
 # 刷新权限
 mysql> flush privileges;    
 mysql> exit

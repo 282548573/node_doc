@@ -180,6 +180,7 @@ CONTAINER ID   IMAGE          COMMAND       CREATED          STATUS          POR
 ###### 
 
 ```shell
+#-p 宿主机端口:docker端口
 ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker run -itd -p 127.0.0.1:5002:5000 --name ubuntu-test4 ubuntu:15.10 /bin/bash
 01786b04e74327224d14d56fa96175147168cfb37a0bab081018ac2a27d16b7d
 ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
@@ -219,6 +220,19 @@ CONTAINER ID   IMAGE          COMMAND       CREATED              STATUS         
 
 
 
+###### 常用的后台模式
+
+```shell
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker run -d -p 5002:5000/udp  --name ubuntu-test4 ubuntu:15.10 
+01786b04e74327224d14d56fa96175147168cfb37a0bab081018ac2a27d16b7d
+
+ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker ps
+CONTAINER ID   IMAGE          COMMAND       CREATED              STATUS              PORTS                      NAMES
+01786b04e743   ubuntu:15.10   "/bin/bash"   3 seconds ago        Up 2 seconds        127.0.0.1:5002->5000/tcp   ubuntu-test4
+```
+
+
+
 #####  **docker ps** 
 
 > **CONTAINER ID:** 容器 ID。
@@ -246,10 +260,15 @@ CONTAINER ID   IMAGE          COMMAND       CREATED              STATUS         
 > **NAMES:** 自动分配的容器名称。
 
 ```shell
+# 运行中的镜像
 ubuntu@VM-0-8-ubuntu:~$ sudo docker ps
 CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
 df6fe458e225   ubuntu:15.10   "/bin/sh -c 'while t…"   42 seconds ago   Up 42 seconds             vigilant_nightingale
 1837c3be4148   ubuntu:15.10   "/bin/bash"              19 minutes ago   Up 19 minutes             sleepy_lamarr
+
+# 全部镜像
+ubuntu@VM-0-8-ubuntu:~$ sudo docker ps -a
+
 ```
 
 

@@ -664,7 +664,7 @@ sky_test        latest    3c1d3f62be55   6 minutes ago    191MB
 
 
 
-## 五、容器连接
+## 五、容器网桥
 
 > 端口映射并不是唯一把 docker 连接到另一个容器的方法。
 >
@@ -672,15 +672,89 @@ sky_test        latest    3c1d3f62be55   6 minutes ago    191MB
 >
 > docker 连接会创建一个父子关系，其中父容器可以看到子容器的信息。
 
+
+
+#### 默认网桥
+
+>  docker默认创建一个公共的网桥,网桥的内部的容器网络是互通的 可以用 
+
+```shell
+docker inspect 容器Id
+```
+
+
+
 #### docker network
 
 > **-d**：参数指定 Docker 网络类型，有 bridge、overlay。
 >
 > 其中 overlay 网络类型用于 Swarm mode，在本小节中你可以忽略它
 
+
+
+##### 创建 docker network create
+
 ```shell
-docker network create -d bridge test-net
+# 不加 -d bridge也是默认创建网桥模式
+root@VM-0-8-ubuntu:~# docker network create ems
+root@VM-0-8-ubuntu:~# docker network create -d bridge ems
+
+#启动容器指定网桥 添加参数 --network ems
+root@VM-0-8-ubuntu:~# docker run -d --network ems --name sky-tomcat-network tomcat
+5d5a05e5e27135213f909017923c08da0649f8dfde635da05c7a4bca3a998e9e
+
+#查看docker 信息 是网桥ems，网关是172.18.0.1
+root@VM-0-8-ubuntu:~# docker inspect sky-tomcat-network
+"Networks": {
+                "ems": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": [
+                        "5d5a05e5e271"
+                    ],
+                    "NetworkID": "c56920fa02eddd5eab00a15bb853b47cb1bfa4294c63cd9bde422c89671d89c2",
+                    "EndpointID": "d562fe3b7971d016f3fb69e7424d0ca040a52dcb052eba95b806700dab1a8429",
+                    "Gateway": "172.18.0.1",
+                    "IPAddress": "172.18.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "MacAddress": "02:42:ac:12:00:02",
+                    "DriverOpts": null
+                }
+            }
+            
 ```
+
+> 在同个网桥内的容器可以用容器名称代替ip去访问同个网桥内的容器pi
+>
+> 同个网桥里的容器id与ip是一一映射的，容器id相对于域名了
+
+
+
+```shell
+root@VM-0-8-ubuntu:~# docker run -d --network ems --name sky-tomcat-network tomcat
+5d5a05e5e27135213f909017923c08da0649f8dfde635da05c7a4bca3a998e9e
+root@VM-0-8-ubuntu:~# docker run -d --network ems --name sky-tomcat-network1 tomcat
+d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f
+
+docker exec -it d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f bash
+
+root@VM-0-8-ubuntu:~# docker exec -it d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f bash
+root@d585e2e31627:/usr/local/tomcat# ping sky-tomcat-network
+PING sky-tomcat-network (172.18.0.2) 56(84) bytes of data.
+64 bytes from sky-tomcat-network.ems (172.18.0.2): icmp_seq=1 ttl=64 time=0.042 ms
+
+```
+
+
+
+
+
+
+
+
 
 ```shell
 ubuntu@VM-0-8-ubuntu:~/sky$ sudo docker network create -d bridge test-net
@@ -720,4 +794,351 @@ root@383978d0fc3e:/# apt install iputils-ping
 root@383978d0fc3e:/# ping test2
 
 ```
+
+##### 链接 docker network connect
+
+```shell
+root@VM-0-8-ubuntu:~# docker network connect cc sky-tomcat-network1
+root@VM-0-8-ubuntu:~# docker network inspect cc
+"Containers": {
+            "d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f": {
+                "Name": "sky-tomcat-network1",
+                "EndpointID": "3cbe2444346e5b00260353e214c3f0deb62a11ede79837359c422db34827a5ae",
+                "MacAddress": "02:42:ac:15:00:02",
+                "IPv4Address": "172.21.0.2/16",
+                "IPv6Address": ""
+            }
+        }
+```
+
+
+
+
+
+##### 断连  docker network disconnect
+
+```shell
+root@VM-0-8-ubuntu:~# docker network disconnect ems sky-tomcat-network1
+root@VM-0-8-ubuntu:~# docker network inspect ems 
+        "Containers": {
+            "5d5a05e5e27135213f909017923c08da0649f8dfde635da05c7a4bca3a998e9e": {
+                "Name": "sky-tomcat-network",
+                "EndpointID": "d562fe3b7971d016f3fb69e7424d0ca040a52dcb052eba95b806700dab1a8429",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        }
+        
+```
+
+
+
+##### 信息 docker network inspect
+
+```shell
+root@VM-0-8-ubuntu:~# docker network inspect ems 
+[
+    {
+        "Name": "ems",
+        "Id": "c56920fa02eddd5eab00a15bb853b47cb1bfa4294c63cd9bde422c89671d89c2",
+        "Created": "2021-07-04T11:03:53.68269213+08:00",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        #网桥正在被使用的容器列表，目前有两个容器使用该网桥
+        "Containers": {
+        		#容器id
+            "5d5a05e5e27135213f909017923c08da0649f8dfde635da05c7a4bca3a998e9e": {
+                "Name": "sky-tomcat-network", #容器名称
+                "EndpointID": "d562fe3b7971d016f3fb69e7424d0ca040a52dcb052eba95b806700dab1a8429",
+                "MacAddress": "02:42:ac:12:00:02", #容器物理地址
+                "IPv4Address": "172.18.0.2/16",		#容器ip
+                "IPv6Address": ""
+            },
+            "d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f": {
+                "Name": "sky-tomcat-network1",
+                "EndpointID": "4b0f922016200907417972656e0c04a6ea3c2682124ed4598551ae5d02e9f81c",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+```
+
+
+
+##### 列表 docker network ls
+
+```shell
+root@VM-0-8-ubuntu:~# docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+8e8d5ffac9a4   bridge    bridge    local
+d34ff033c207   cc        bridge    local
+c56920fa02ed   ems       bridge    local
+3d58ac170c4f   host      host      local
+02da5b045769   none      null      local
+```
+
+
+
+##### 删除无用 docker network prune
+
+```shell
+root@VM-0-8-ubuntu:~# docker network create aa
+906cdfeaa55b171aa484960ad66a5ab8be366ec92d3e788869c4c18c89f7edaa
+root@VM-0-8-ubuntu:~# docker network prune 
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Networks:
+aa
+```
+
+
+
+
+
+##### 删除 docker network rm 
+
+```shell
+root@VM-0-8-ubuntu:~# docker network  create aa
+770b00dc8f024b6abba5c17f0af755acfd236829c1f1e16b54e1ef9164c3c886
+root@VM-0-8-ubuntu:~# docker network rm aa
+aa
+
+# 当网桥被容器使用时不可删除
+root@VM-0-8-ubuntu:~# docker network rm cc
+Error response from daemon: error while removing network: network cc id d34ff033c207238468881604bed165f39e647b618adbcba1858b3480f9fd083e has active endpoints
+
+
+# 当网桥被停止时，网桥可以被删除了
+root@VM-0-8-ubuntu:~# docker stop d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f
+d585e2e31627e3e994c0fdd6bf9f6db66160993c92364b0b48f9d0f382cbdd7f
+root@VM-0-8-ubuntu:~# docker network inspect cc
+"Containers": {},
+
+root@VM-0-8-ubuntu:~# docker network rm cc
+cc
+
+```
+
+
+
+## 六、数据卷
+
+### 概况
+
+> 作用：容器与宿主机的数据共享
+>
+> 特点：
+>
+> - 数据卷容器之间共享与重用；
+>
+> - 对数据卷的修改立即影响对应的容器；
+> - 数据卷内容修改不会影响容器
+> - 数据卷一直存在、即使容器被删除
+>
+> 数据卷操作
+>
+> - 手动创建卷名
+> - 自动创建卷名
+> - 
+
+
+
+
+
+```shell
+docker run -d -p 8089:8080 --name tomcat1  -v /root/sky/docker:/usr/local/tomcat/webapps  tomcat
+vim /root/sky/docker/ems/index.html
+```
+
+```html
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>我的第一个 HTML 页面</title>
+  </head>
+	<body>
+		<p>body 元素的内容会显示在浏览器中。</p>
+		<p>title 元素的内容会显示在浏览器的标题栏中。</p>
+	</body>
+</html>
+```
+
+```shell
+root@VM-0-8-ubuntu:~/sky/docker/ems# curl http://159.75.133.82:8089/ems/index.html
+<html>
+
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>我的第一个 HTML 页面</title>
+</head>
+
+<body>
+<p>body 元素的内容会显示在浏览器中。</p>
+<p>title 元素的内容会显示在浏览器的标题栏中。</p>
+</body>
+
+</html>
+```
+
+
+
+### 手动数据卷
+
+数据卷 宿主机与容器内容都可以读写
+
+```shell
+docker run -d -p 8089:8080 --name tomcat1  -v /root/sky/docker:/usr/local/tomcat/webapps  tomcat
+```
+
+数据卷 宿主机可以读写 ，容器自读
+
+```shell
+docker run -d -p 8089:8080 --name tomcat1  -v /root/sky/docker:/usr/local/tomcat/webapps:ro  tomcat
+```
+
+
+
+
+
+### 自动数据卷
+
+
+
+```shell
+docker run -d -p 8088:8080 --name tomcat2  -v bb:/usr/local/tomcat/webapps:ro  tomcat
+docker run -d -p 8088:8080 --name tomcat2  -v bb:/usr/local/tomcat/webapps:ro  tomcat
+a2c766df3fd6624f477338bc0e95f22f6701bdc146d3100ef5c972f00937b3c5
+
+docker volume ls
+DRIVER    VOLUME NAME
+local     335ab7fe2218e88d5d29043a6c96faa7e9afdf5aa1e2da694656d7f5cb72e66a
+local     bb
+
+docker volume inspect bb
+
+[
+    {
+        "CreatedAt": "2021-07-04T13:15:05+08:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/bb/_data",
+        "Name": "bb",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+
+
+#### docker volume --help
+
+
+
+```shell
+docker volume --help 
+
+Commands:
+  create      Create a volume
+  inspect     Display detailed information on one or more volumes
+  ls          List volumes
+  prune       Remove all unused local volumes
+  rm          Remove one or more volumes
+```
+
+
+
+#### docker volume create 
+
+```shell
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume create cc
+cc
+```
+
+
+
+#### docker volume inspect 
+
+```shell
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume create cc
+cc
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume inspect cc
+[
+    {
+        "CreatedAt": "2021-07-04T13:20:08+08:00",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/cc/_data",
+        "Name": "cc",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+```
+
+
+
+#### docker volume ls 
+
+```shell
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume ls 
+DRIVER    VOLUME NAME
+local     335ab7fe2218e88d5d29043a6c96faa7e9afdf5aa1e2da694656d7f5cb72e66a
+local     bb
+local     cc
+```
+
+
+
+#### docker volume prune 
+
+```shell
+Total reclaimed space: 0B
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume ls 
+DRIVER    VOLUME NAME
+local     bb
+```
+
+
+
+#### docker volume rm
+
+```shell
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume create dd
+dd
+root@VM-0-8-ubuntu:~/sky/docker/ems# docker volume rm dd 
+dd
+```
+
+
+
+## 七、Docker核心架构
+
+![image-20210704132729239](/Users/sky/Github/node/node_doc/docker/image/docker_核心架构.png)
+
+
 
